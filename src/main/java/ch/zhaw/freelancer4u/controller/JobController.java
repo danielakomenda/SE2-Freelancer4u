@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.zhaw.freelancer4u.model.Job;
 import ch.zhaw.freelancer4u.model.JobCreateDTO;
+import ch.zhaw.freelancer4u.model.JobType;
 import ch.zhaw.freelancer4u.repository.JobRepository;
 
 @RestController
@@ -25,16 +27,33 @@ public class JobController {
 
     @PostMapping("/job")
     public ResponseEntity<Job> createJob(
-            @RequestBody JobCreateDTO fDTO) {
-        Job fDAO = new Job(fDTO.getDescription(), fDTO.getEarnings(), fDTO.getJobType());
-        Job f = jobRepository.save(fDAO);
-        return new ResponseEntity<>(f, HttpStatus.CREATED);
+            @RequestBody JobCreateDTO jDTO) {
+        Job jDAO = new Job(jDTO.getDescription(), jDTO.getEarnings(), jDTO.getJobType());
+        Job job = jobRepository.save(jDAO);
+        return new ResponseEntity<>(job, HttpStatus.CREATED);
     }
+
 
     @GetMapping("/job")
-    public ResponseEntity<List<Job>> getAllFreelancer() {
-        List<Job> allFree = jobRepository.findAll();
-        return new ResponseEntity<>(allFree, HttpStatus.OK);
-    }
+        public ResponseEntity<List<Job>> getAllJob(
+            @RequestParam(required = false) Double min,
+            @RequestParam(required = false) JobType type
+            ) {
+            
+                List<Job> jobs;
+                if (min != null && type != null) {
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                }
 
+                if (min == null && type == null) {
+                    jobs = jobRepository.findAll();
+                } else if (min != null) {
+                    jobs = jobRepository.findByEarningsGreaterThan(min);
+                } else {
+                    jobs = jobRepository.findByJobType(type);
+                }
+                
+                return new ResponseEntity<>(jobs, HttpStatus.OK);
+            }
 }
+
