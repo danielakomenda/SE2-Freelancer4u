@@ -7,5 +7,5 @@ import ch.zhaw.freelancer4u.model.Freelancer;
 
 
 public interface FreelancerRepository extends MongoRepository<Freelancer, String> {
-    
+    Freelancer findFirstByEmail(String email);
 }
