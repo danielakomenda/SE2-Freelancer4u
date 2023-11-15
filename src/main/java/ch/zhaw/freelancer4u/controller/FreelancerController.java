@@ -47,4 +47,5 @@ public class FreelancerController {
 			return new ResponseEntity<Freelancer>(HttpStatus.NOT_FOUND);
 		}
     }
+    
 }
