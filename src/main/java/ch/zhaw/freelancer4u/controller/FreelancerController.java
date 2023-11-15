@@ -1,11 +1,13 @@
 package ch.zhaw.freelancer4u.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,4 +36,15 @@ public class FreelancerController {
         return new ResponseEntity<>(allFree, HttpStatus.OK);
     }
 
+
+    @GetMapping("/freelancer/{id}")
+    public ResponseEntity<Freelancer> getFreelancerById(@PathVariable String id) {
+    Optional<Freelancer> optFreelancer = freelancerRepository.findById(id);
+
+        if (optFreelancer.isPresent()){
+			return new ResponseEntity<Freelancer>(optFreelancer.get(), HttpStatus.OK);
+		} else {
+			return new ResponseEntity<Freelancer>(HttpStatus.NOT_FOUND);
+		}
+    }
 }
