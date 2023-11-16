@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.zhaw.freelancer4u.model.Job;
 import ch.zhaw.freelancer4u.model.JobCreateDTO;
+import ch.zhaw.freelancer4u.model.JobStateAggregation;
 import ch.zhaw.freelancer4u.model.JobType;
 import ch.zhaw.freelancer4u.repository.JobRepository;
 
@@ -31,27 +32,30 @@ public class JobController {
         return new ResponseEntity<>(job, HttpStatus.CREATED);
     }
 
-
     @GetMapping("/job")
-        public ResponseEntity<List<Job>> getAllJob(
+    public ResponseEntity<List<Job>> getAllJob(
             @RequestParam(required = false) Double min,
-            @RequestParam(required = false) JobType type
-            ) {
-            
-                List<Job> jobs;
-                if (min != null && type != null) {
-                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-                }
+            @RequestParam(required = false) JobType type) {
 
-                if (min == null && type == null) {
-                    jobs = jobRepository.findAll();
-                } else if (min != null) {
-                    jobs = jobRepository.findByEarningsGreaterThan(min);
-                } else {
-                    jobs = jobRepository.findByJobType(type);
-                }
-                
-                return new ResponseEntity<>(jobs, HttpStatus.OK);
-            }
+        List<Job> jobs;
+        if (min != null && type != null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        if (min == null && type == null) {
+            jobs = jobRepository.findAll();
+        } else if (min != null) {
+            jobs = jobRepository.findByEarningsGreaterThan(min);
+        } else {
+            jobs = jobRepository.findByJobType(type);
+        }
+
+        return new ResponseEntity<>(jobs, HttpStatus.OK);
+    }
+
+    @GetMapping("/job/aggregation/state")
+    public List<JobStateAggregation> getJobStateAggregation() {
+        return jobRepository.getJobStateAggregation();
+    }
+
 }
-
