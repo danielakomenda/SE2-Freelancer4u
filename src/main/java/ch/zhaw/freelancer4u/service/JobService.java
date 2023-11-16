@@ -25,7 +25,7 @@ public class JobService {
         if (jobToAssign.isPresent()) {
             Job job = jobToAssign.get();
             if (job.getJobState() == JobState.NEW) {
-                if (!freelancer.equals(null)){
+                if (freelancer!=null){
                     String id = freelancer.getId();
                     job.setJobState(JobState.ASSIGNED);
                     job.setFreelancerId(id);
@@ -35,5 +35,25 @@ public class JobService {
             }
         }
         return Optional.empty();
+    }
+
+
+    public Optional<Job> completeJob(String jobId, String freelancerEmail){
+        Optional<Job> jobToComplete = jobRepository.findById(jobId);
+
+        
+        if (jobToComplete.isPresent() && jobToComplete.get().getJobState() == JobState.ASSIGNED) {
+            
+            Optional<Freelancer> freelancer = freelancerRepository.findById(jobToComplete.get().getFreelancerId());
+            Job job = jobToComplete.get();
+            if (freelancer.isPresent() && freelancer.get().getEmail().equals(freelancerEmail)){
+                job.setJobState(JobState.DONE);
+                jobRepository.save(job);
+                return Optional.of(job);
+            }
+            
+        }
+        return Optional.empty();
+
     }
 }

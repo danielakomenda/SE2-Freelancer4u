@@ -28,4 +28,17 @@ public class ServiceController {
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
+
+
+    @PutMapping("/completejob")
+    public ResponseEntity<Job> completeJob(@RequestBody JobStateChangeDTO changeS) {
+        String freelancerEmail = changeS.getFreelancerEmail();
+        String jobId = changeS.getJobId();
+        Optional<Job> job = jobService.completeJob(jobId, freelancerEmail);
+        if (job.isPresent()) {
+            return new ResponseEntity<>(job.get(), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
 }

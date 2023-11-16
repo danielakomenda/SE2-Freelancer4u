@@ -13,4 +13,5 @@ public interface JobRepository extends MongoRepository<Job, String> {
     List<Job> findByEarningsGreaterThan(Double earnings);
 
     List<Job> findByJobType(JobType type);
+    
 }
