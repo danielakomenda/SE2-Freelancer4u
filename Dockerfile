@@ -12,9 +12,9 @@ RUN cd freelancer4u-frontend && npm install
 RUN cd freelancer4u-frontend && npm run build
 RUN rm -r freelancer4u-frontend
 
-RUN sed -i 's/\r$//' mvnw
-RUN chmod +x mvnw
-RUN ./mvnw package
+RUN sed -i 's/\r$//' mvn
+RUN chmod +x mvn
+RUN ./mvn package
 
 EXPOSE 8080
 CMD ["java", "-jar", "/usr/src/app/target/freelancer4u-0.0.1-SNAPSHOT.jar"]
