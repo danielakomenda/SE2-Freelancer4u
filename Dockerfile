@@ -15,7 +15,7 @@ RUN rm -r freelancer4u-frontend
 RUN ls -al
 RUN sed -i 's/\r$//' mvnw
 RUN chmod +x mvnw
-RUN ./mvn package
+RUN ./mvnw package
 
 EXPOSE 8080
 CMD ["java", "-jar", "/usr/src/app/target/freelancer4u-0.0.1-SNAPSHOT.jar"]
