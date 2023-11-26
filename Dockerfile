@@ -12,8 +12,9 @@ RUN cd freelancer4u-frontend && npm install
 RUN cd freelancer4u-frontend && npm run build
 RUN rm -r freelancer4u-frontend
 
-RUN sed -i 's/\r$//' mvn
-RUN chmod +x mvn
+RUN ls -al
+RUN sed -i 's/\r$//' mvnw
+RUN chmod +x mvnw
 RUN ./mvn package
 
 EXPOSE 8080
