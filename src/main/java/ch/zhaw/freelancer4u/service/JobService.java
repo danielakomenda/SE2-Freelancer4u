@@ -41,9 +41,7 @@ public class JobService {
     public Optional<Job> completeJob(String jobId, String freelancerEmail){
         Optional<Job> jobToComplete = jobRepository.findById(jobId);
 
-        
-        if (jobToComplete.isPresent() && jobToComplete.get().getJobState() == JobState.ASSIGNED) {
-            
+        if (jobToComplete.isPresent() && jobToComplete.get().getJobState() == JobState.ASSIGNED) {            
             Optional<Freelancer> freelancer = freelancerRepository.findById(jobToComplete.get().getFreelancerId());
             Job job = jobToComplete.get();
             if (freelancer.isPresent() && freelancer.get().getEmail().equals(freelancerEmail)){
@@ -51,7 +49,6 @@ public class JobService {
                 jobRepository.save(job);
                 return Optional.of(job);
             }
-            
         }
         return Optional.empty();
 

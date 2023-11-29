@@ -1,6 +1,6 @@
 <script>
   import axios from "axios";
-  import { jwt_token, user } from "../store";
+  import { jwt_token, user, userId } from "../store";
   import { querystring } from "svelte-spa-router";
 
 
@@ -35,27 +35,19 @@ $: {
     }
 }
 
-
   function getJobs() {
-    
-    // NUMBER OF RESULTS
     let query = "?pageSize=" + defaultPageSize + "&pageNumber=" + currentPage;
-      
-      // FILTER
         if (earningsMin) {
             query += ("&min=" + (earningsMin-1));
         }
         if (jobType && jobType !== "ALL") {
             query += ("&type=" +jobType);
         }
-
-        // REQUEST-CONFIGURATIONS
       var config = {
       method: "get",
       url: api_root + "/api/job" + query,
       headers: { Authorization: "Bearer " + $jwt_token }, // Token wird als Header übergeben
     };
-
     axios(config)
       .then(function (response) {
         jobs = response.data.content;
@@ -77,7 +69,6 @@ $: {
       },
       data: job,
     };
-
     axios(config)
       .then(function (response) {
         alert("Job created");
@@ -90,8 +81,40 @@ $: {
   }
 
 
-</script>
+function assignToMe(jobId) {
+    var config = {
+        method: "put",
+        url: api_root + "/api/me/assignjob?jobId=" +jobId,
+        headers: { Authorization: "Bearer " + $jwt_token },
+    };
+    axios(config)
+    .then(function (response) {
+        getJobs();
+    })
+    .catch(function (error) {
+        alert("Could not assign job to me");
+        console.log(error);
+    })
+}
 
+function completeMyJob(jobId) {
+    var config = {
+        method: "put",
+        url: api_root + "/api/me/completejob?jobId=" +jobId,
+        headers: { Authorization: "Bearer " + $jwt_token },
+    };
+    axios(config)
+    .then(function (response) {
+        getJobs();
+    })
+    .catch(function (error) {
+        alert("Could not complete the job");
+        console.log(error);
+    })
+}
+
+
+</script>
 
 {#if $user.user_roles && $user.user_roles.includes("admin")}
 <!-- CREATE JOBS: SICHTBAR FÜR ADMINS -->
@@ -184,6 +207,7 @@ $: {
       <th scope="col">Earnings</th>
       <th scope="col">State</th>
       <th scope="col">FreelancerId</th>
+      <th scope="col">Actions</th>
     </tr>
   </thead>
   <tbody>
@@ -194,6 +218,34 @@ $: {
         <td>{job.earnings}</td>
         <td>{job.jobState}</td>
         <td>{job.freelancerId}</td>
+        <td>
+
+            {#if job.freelancerId === null}
+            <button type="button" class="btn btn-primary btn-sm" on:click={() => assignToMe(job.id)}>
+                Assign to me
+            </button>
+            {/if}
+
+            {#if job.jobState === "ASSIGNED" && job.freelancerId === $userId}
+            <span class="badge bg-primary">Assigned To Me</span>
+            <button type="button" class="btn btn-success btn-sm" on:click={() => completeMyJob(job.id)}>
+                Complete Job
+            </button>
+            {/if}
+
+            {#if job.jobState === "ASSIGNED" && job.freelancerId !== $userId}
+                <span class="badge bg-secondary">Assigned To someone else</span>
+            {/if}
+
+            {#if job.jobState === "DONE" && job.freelancerId === $userId}
+            <span class="badge bg-success">Done</span>
+            {/if}
+
+            {#if job.jobState === "DONE" && job.freelancerId !== $userId}
+            <span class="badge bg-secondary">Done</span>
+            {/if}
+
+        </td>
       </tr>
     {/each}
   </tbody>

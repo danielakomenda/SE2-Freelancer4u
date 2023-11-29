@@ -29,17 +29,12 @@
   }
 
   function getFreelancer() {
-    
-    // NUMBER OF RESULTS
     let query = "?pageSize=" + defaultPageSize + "&pageNumber=" + currentPage;
-    
-    // REQUEST-CONFIGURATIONS
     var config = {
       method: "get",
       url: api_root + "/api/freelancer" + query,
       headers: { Authorization: "Bearer " + $jwt_token }, // Token wird als Header übergeben
     };
-
     axios(config)
       .then(function (response) {
         freelancers = response.data.content;
@@ -61,7 +56,6 @@
       },
       data: freelancer,
     };
-
     axios(config)
       .then(function (response) {
         alert("Freelancer created");

@@ -1,5 +1,4 @@
 <script>
-  import axios from "axios";
   import { isAuthenticated, user } from "../store"
 
   const api_root = window.location.origin;
@@ -11,7 +10,7 @@
 {#if $isAuthenticated}
 
 <h1 class="mt-3">Account Details</h1>
-<img src="{$user.picture}" alt="User Picture">
+<img src="{$user.picture}" alt="User">
 
 <table>
     <tr>

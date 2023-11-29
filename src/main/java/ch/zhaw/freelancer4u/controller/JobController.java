@@ -44,10 +44,9 @@ public class JobController {
             @RequestParam(required = false) JobType type,
             @RequestParam(required = false, defaultValue = "1") Integer pageNumber,
             @RequestParam(required = false, defaultValue = "2") Integer pageSize
-            ) {
+        ) {
 
         Page<Job> jobs;
-
         if (min == null && type != null) {
             jobs = jobRepository.findByJobType(type, PageRequest.of(pageNumber-1, pageSize));
         } else if (min != null && type == null) {
