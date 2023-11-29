@@ -3,6 +3,8 @@ package ch.zhaw.freelancer4u.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -37,21 +39,24 @@ public class JobController {
     }
 
     @GetMapping("/job")
-    public ResponseEntity<List<Job>> getAllJob(
+    public ResponseEntity<Page<Job>> getAllJob(
             @RequestParam(required = false) Double min,
-            @RequestParam(required = false) JobType type) {
+            @RequestParam(required = false) JobType type,
+            @RequestParam(required = false, defaultValue = "1") Integer pageNumber,
+            @RequestParam(required = false, defaultValue = "2") Integer pageSize
+            ) {
 
-        List<Job> jobs;
-        if (min != null && type != null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        Page<Job> jobs;
+
+        if (min == null && type != null) {
+            jobs = jobRepository.findByJobType(type, PageRequest.of(pageNumber-1, pageSize));
+        } else if (min != null && type == null) {
+            jobs = jobRepository.findByEarningsGreaterThan(min, PageRequest.of(pageNumber-1, pageSize));
+        } else if (min != null && type != null) {
+            jobs = jobRepository.findByJobTypeAndEarningsGreaterThan(type, min,PageRequest.of(pageNumber - 1, pageSize));
         }
-
-        if (min == null && type == null) {
-            jobs = jobRepository.findAll();
-        } else if (min != null) {
-            jobs = jobRepository.findByEarningsGreaterThan(min);
-        } else {
-            jobs = jobRepository.findByJobType(type);
+         else {
+            jobs = jobRepository.findAll(PageRequest.of(pageNumber-1, pageSize));
         }
 
         return new ResponseEntity<>(jobs, HttpStatus.OK);

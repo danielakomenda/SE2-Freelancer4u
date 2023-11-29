@@ -7,7 +7,6 @@ import config from "./auth.config";
 let auth0Client;
 
 async function createClient() {
-    console.log("Checkpoint 1")
   auth0Client = await createAuth0Client({
     domain: config.auth0_domain,
     client_id: config.auth0_client_id,
@@ -16,7 +15,6 @@ async function createClient() {
 
 async function loginWithPopup() {
   try {
-      console.log("Checkpoint 2")
     await createClient();
     await auth0Client.loginWithPopup();
     user.set(await auth0Client.getUser());
@@ -97,8 +95,9 @@ async function loginWithPopup() {
           .then((response) => {
             const { id_token, access_token } = response.data;
             jwt_token.set(id_token);
-            console.log("Login successful:", id_token);
+            console.log(id_token);
             getUserInfo(access_token);
+            
             if (redirectToHome) {
               setTimeout(() => {
                 push("/");

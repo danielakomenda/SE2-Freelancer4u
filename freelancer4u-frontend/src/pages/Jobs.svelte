@@ -1,10 +1,18 @@
 <script>
   import axios from "axios";
-  import { jwt_token } from "../store";
-  import {isAuthenticated, user} from "../store";
+  import { jwt_token, user } from "../store";
+  import { querystring } from "svelte-spa-router";
 
-  // TODO: Setze hier die URL zu deinem mit Postman erstellten Mock Server
+
+
   const api_root = window.location.origin;
+
+  let currentPage;
+  let nrOfPages = 0;
+  let defaultPageSize = 4;
+
+  let earningsMin;
+  let jobType;
 
   let jobs = [];
   let job = {
@@ -13,24 +21,52 @@
     jobType: null,
   };
 
+
+$: {
+    if ($jwt_token !== "") {
+        let searchParams = new URLSearchParams($querystring);
+
+        if (searchParams.has("page")){
+            currentPage = searchParams.get("page")
+        } else {
+            currentPage = "1"
+        }
+        getJobs();
+    }
+}
+
+
   function getJobs() {
-      testPrint()
+    
+    // NUMBER OF RESULTS
+    let query = "?pageSize=" + defaultPageSize + "&pageNumber=" + currentPage;
+      
+      // FILTER
+        if (earningsMin) {
+            query += ("&min=" + (earningsMin-1));
+        }
+        if (jobType && jobType !== "ALL") {
+            query += ("&type=" +jobType);
+        }
+
+        // REQUEST-CONFIGURATIONS
       var config = {
       method: "get",
-      url: api_root + "/api/job",
+      url: api_root + "/api/job" + query,
       headers: { Authorization: "Bearer " + $jwt_token }, // Token wird als Header übergeben
     };
 
     axios(config)
       .then(function (response) {
-        jobs = response.data;
+        jobs = response.data.content;
+        nrOfPages = response.data.totalPages;
       })
       .catch(function (error) {
         alert("Could not get jobs");
         console.log(error);
       });
   }
-  getJobs();
+
 
   function createJob() {
     var config = {
@@ -54,15 +90,11 @@
   }
 
 
-function testPrint(){
-    console.log("Test-Print")
-}
-
-
-
 </script>
 
-{#if $isAuthenticated && $user.user_roles && $user.user_roles.includes("admin")}
+
+{#if $user.user_roles && $user.user_roles.includes("admin")}
+<!-- CREATE JOBS: SICHTBAR FÜR ADMINS -->
 <h1 class="mt-3">Create Job</h1>
 <form class="mb-5">
   <div class="row mb-3">
@@ -100,9 +132,50 @@ function testPrint(){
     >Submit</button
   >
 </form>
-
 {/if}
+
+
+
+
+<!-- LISTE VON JOBS: SICHTBAR FÜR ALLE USER -->
 <h1>All Jobs</h1>
+
+<div class="row my-3">
+
+    <!--FILTER FOR EARNINGS-->
+    <div class="col-auto">
+        <label for="" class="col-form-label">Earnings: </label>
+    </div>
+    <div class="col3">
+        <input
+            class="form-contol"
+            type="number"
+            placeholder="min"
+            bind:value={earningsMin}
+        />
+    </div>
+
+    <!--FILTER FOR JOBTYPE-->
+    <div class="col-auto">
+        <label for="" class="col-form-label">Job Type: </label>
+    </div>
+    <div class="col-3">
+        <select bind:value={jobType} class="form-select" id="type" type="text">
+        <option value="ALL"></option>
+        <option value="OTHER">OTHER</option>
+        <option value="TEST">TEST</option>
+        <option value="IMPLEMENT">IMPLEMENT</option>
+        <option value="REVIEW">REVIEW</option>
+        </select>
+    </div>
+
+    <!--APPLY-BUTTON-->
+    <div class="col-3">
+        <a class="btn btn-primary" href={"#/jobs?page=1&jobType=" + jobType + "&earningsMin=" +earningsMin} role=button>Apply</a>
+    </div>
+</div>
+
+
 <table class="table">
   <thead>
     <tr>
@@ -125,3 +198,13 @@ function testPrint(){
     {/each}
   </tbody>
 </table>
+
+<nav>
+    <ul class="pagination">
+        {#each Array(nrOfPages) as _, i}
+      <li class="page-item">
+          <a class="page-link" class:active={currentPage == i+1} href={"#/jobs?page=" + (i+1)}>{i +1}</a>
+     </li>
+     {/each}
+    </ul>
+</nav>
