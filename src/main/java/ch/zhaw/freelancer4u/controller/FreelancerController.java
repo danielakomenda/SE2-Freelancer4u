@@ -1,5 +1,6 @@
 package ch.zhaw.freelancer4u.controller;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,19 @@ public class FreelancerController {
         return new ResponseEntity<>(allFree, HttpStatus.OK);
     }
 
+
+    @GetMapping("/getall")
+    @Secured("ROLE_admin")
+    public ResponseEntity<List<Freelancer>> getListOfAllFreelancer() {
+        List<Freelancer> allFree = freelancerRepository.findAll();
+        if (!allFree.isEmpty()){
+        return new ResponseEntity<List<Freelancer>>(allFree, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<List<Freelancer>>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+
     @GetMapping("/id/{id}")
     @Secured("ROLE_admin")
     public ResponseEntity<Freelancer> getFreelancerById(@PathVariable String id) {
@@ -55,6 +69,17 @@ public class FreelancerController {
             return new ResponseEntity<Freelancer>(optFreelancer.get(), HttpStatus.OK);
         } else {
             return new ResponseEntity<Freelancer>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/search/name")
+    @Secured("ROLE_admin")
+    public ResponseEntity<List<Freelancer>> getFreelancerByName(@PathVariable String name) {
+        List<Freelancer> optFreelancer = freelancerRepository.findFreelancerByName(name);
+        if (!optFreelancer.isEmpty()) {
+            return new ResponseEntity<List<Freelancer>>(optFreelancer, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<List<Freelancer>>(HttpStatus.NOT_FOUND);
         }
     }
 }

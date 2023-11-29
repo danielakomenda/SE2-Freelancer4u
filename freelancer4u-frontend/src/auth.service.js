@@ -138,7 +138,7 @@ async function logout() {
     jwt_token.set("");
     await auth0Client.logout({ returnTo: window.location.origin });
   } catch (e) {
-    //console.error(e);
+    console.error(e);
   }
   push("/"); // return to main page
 }
