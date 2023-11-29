@@ -63,3 +63,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+
+src/main/resources/static/assets/*
+freelancer4u-frontend/README.md
+.github/ISSUE_TEMPLATE/
