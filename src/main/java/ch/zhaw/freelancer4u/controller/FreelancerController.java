@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,7 +31,9 @@ public class FreelancerController {
         return new ResponseEntity<>(f, HttpStatus.CREATED);
     }
 
+    
     @GetMapping("/freelancer")
+    @Secured("ROLE_admin")
     public ResponseEntity<List<Freelancer>> getAllFreelancer() {
         List<Freelancer> allFree = freelancerRepository.findAll();
         return new ResponseEntity<>(allFree, HttpStatus.OK);
@@ -38,6 +41,7 @@ public class FreelancerController {
 
 
     @GetMapping("/freelancer/{id}")
+    @Secured("ROLE_admin")
     public ResponseEntity<Freelancer> getFreelancerById(@PathVariable String id) {
     Optional<Freelancer> optFreelancer = freelancerRepository.findById(id);
 

@@ -1,5 +1,7 @@
 <script>
   import axios from "axios";
+  import { jwt_token } from "../store";
+  import {isAuthenticated, user} from "../store";
 
   // TODO: Setze hier die URL zu deinem mit Postman erstellten Mock Server
   const api_root = window.location.origin;
@@ -16,7 +18,7 @@
       var config = {
       method: "get",
       url: api_root + "/api/job",
-      headers: {},
+      headers: { Authorization: "Bearer " + $jwt_token }, // Token wird als Header übergeben
     };
 
     axios(config)
@@ -60,6 +62,7 @@ function testPrint(){
 
 </script>
 
+{#if $isAuthenticated && $user.user_roles && $user.user_roles.includes("admin")}
 <h1 class="mt-3">Create Job</h1>
 <form class="mb-5">
   <div class="row mb-3">
@@ -98,6 +101,7 @@ function testPrint(){
   >
 </form>
 
+{/if}
 <h1>All Jobs</h1>
 <table class="table">
   <thead>
