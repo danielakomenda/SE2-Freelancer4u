@@ -64,7 +64,15 @@ dist-ssr
 *.sln
 *.sw?
 
-
-src/main/resources/static/assets/*
-freelancer4u-frontend/README.md
 .github/ISSUE_TEMPLATE/
+
+freelancer4u-frontend/README.md
+src/main/resources/static/assets/*.js
+src/main/resources/static/index.html
+src/main/static/assets/svelte**.svg
+**/vite.svg
+
+**/cypress.env.json
+freelancer4u-frontend/cypress/downloads
+freelancer4u-frontend/cypress/fixtures
+freelancer4u-frontend/cypress/support
