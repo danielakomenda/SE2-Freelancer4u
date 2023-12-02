@@ -59,6 +59,7 @@
       });
   }
 
+  
   function createJob() {
     var config = {
       method: "post",
@@ -138,7 +139,7 @@
   function getFreelancer() {
     var config = {
       method: "get",
-      url: api_root + "/api/freelancer/getall",
+      url: api_root + "/api/freelancer/getalltogether",
       headers: { Authorization: "Bearer " + $jwt_token }, // Token wird als Header übergeben
     };
     axios(config)

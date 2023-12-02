@@ -1,13 +1,26 @@
 /// <reference types="Cypress"/>
 
+
 describe("Manage jobs as admin", () => {
-    before(() => {
-        cy.clearAllSessionStorage();
-        cy.visit("http://localhost:8080");
-        cy.get("#username").type(Cypress.env()["admin"].email);
-        cy.get("#password").type(Cypress.env()["admin"].password);
-        cy.contains("button", "Log in").click();
-        cy.get("h1").should("contain", "Welcome");
+    beforeEach(() => {
+        cy.clearAllSessionStorage().then(() => {
+            cy.visit("http://localhost:8080");
+
+            cy.get("#username").type(Cypress.env()["admin"].email);
+            cy.get("#password").type(Cypress.env()["admin"].password);
+
+            // Weil alles gleichzeitig ausgeführt wird und das TOKEN verspätet ankommt
+            cy.intercept('POST', '/oauth/token').as('login')
+            cy.contains("button", "Log in").click();
+
+            cy.wait('@login').then((interception) => {
+                cy.get("h1").should("contain", "Welcome");
+            });            
+        });
+    });
+
+
+    it("delete database", () => {
         cy.request({
             method: "DELETE",
             url: "http://localhost:8080/api/job",
@@ -15,21 +28,17 @@ describe("Manage jobs as admin", () => {
                 Authorization: "Bearer " + sessionStorage.getItem("jwt_token"),
             },
         });
-    });
-
-
-    it("visit jobs page", () => {
-        cy.get('a[href="#/jobs"]').click();
-        cy.location("hash").should("include", "jobs");
     })
 
 
-    it("check no create-form", () => {
+    it("check if create-form exists", () => {
+        cy.get('a[href="#/jobs"]').click();
+        cy.location("hash").should("include", "jobs");
         cy.get('h1').should('contain', 'Create');
     })
 
 
-    it("create jobs", () => {
+    specify("create jobs", () => {
         const formData = [
             { description: 'TestDescription1', type: 'TEST', earnings: 200 },
             { description: 'TestDescription2', type: 'IMPLEMENT', earnings: 100 },
@@ -80,9 +89,19 @@ describe("Manage jobs as admin", () => {
 
 
     it("check assignToMe", () => {
-        cy.get('button:contains("Assign to me")').click();
-        cy.get('tbody>tr').should('contain', 'ASSIGNED');
-    })
+        cy.get('a[href="#/jobs?page=1"]').click();
+        cy.get('tbody>tr').should('contain', 'TestDescription1');
+        cy.get('tr:contains("TestDescription1") button:contains("Assign to me")').click();
+        cy.get('tr:contains("TestDescription1")').should('contain', 'ASSIGNED');
+    });
+
+
+    it("check completeMyJob", () => {
+        cy.get('a[href="#/jobs?page=1"]').click();
+        cy.get('tbody>tr').should('contain', 'TestDescription1');
+        cy.get('tr:contains("TestDescription1") button:contains("Complete Job")').click();
+        cy.get('tr:contains("TestDescription1")').should('contain', 'DONE');
+    });
 
 
     it("check filter-function", () => {

@@ -32,7 +32,7 @@
     let query = "?pageSize=" + defaultPageSize + "&pageNumber=" + currentPage;
     var config = {
       method: "get",
-      url: api_root + "/api/freelancer" + query,
+      url: api_root + "/api/freelancer/getall" + query,
       headers: { Authorization: "Bearer " + $jwt_token }, // Token wird als Header übergeben
     };
     axios(config)
@@ -46,13 +46,13 @@
       });
   }
 
-  
   function createFreelancer() {
     var config = {
       method: "post",
-      url: api_root + "/api/freelancer",
+      url: api_root + "/api/freelancer/create",
       headers: {
         "Content-Type": "application/json",
+        Authorization: "Bearer " + $jwt_token,
       },
       data: freelancer,
     };
@@ -62,12 +62,30 @@
         getFreelancer();
       })
       .catch(function (error) {
-        alert("Could not create Freelancer");
+        alert("Could not create Freelancer. Email already exists.");
+        console.log(error);
+      });
+  }
+
+  function validateEmailAndCreateFreelancer() {
+    var config = {
+      method: "get",
+      url: "https://disify.com/api/email/" + freelancer.email,
+    };
+    axios(config)
+      .then(function (response) {
+        if (response.data.format && !response.data.disposable && response.data.dns) {
+          createFreelancer();
+        } else {
+          alert("Email " + freelancer.email + " is not valid.");
+        }
+      })
+      .catch(function (error) {
+        alert("Could not validate email");
         console.log(error);
       });
   }
 </script>
-
 
 <!-- CREATE FREELANCER: SICHTBAR FÜR ALLE USER -->
 <h1 class="mt-3">Create Freelancer</h1>
@@ -85,38 +103,36 @@
     </div>
   </div>
 
-  <button type="button" class="btn btn-primary" on:click={createFreelancer}>Submit</button>
+  <button type="button" class="btn btn-primary" on:click={validateEmailAndCreateFreelancer}>Submit</button>
 </form>
 
-
-
 {#if $user.user_roles && $user.user_roles.includes("admin")}
-<!-- LISTE VON FREELANCER: SICHTBAR FÜR ADMINS -->
-<h1>All Freelancers</h1>
-<table class="table">
-  <thead>
-    <tr>
-      <th scope="col">Name</th>
-      <th scope="col">E-Mail</th>
-    </tr>
-  </thead>
-  <tbody>
-    {#each freelancers as freelancer}
+  <!-- LISTE VON FREELANCER: SICHTBAR FÜR ADMINS -->
+  <h1>All Freelancers</h1>
+  <table class="table">
+    <thead>
       <tr>
-        <td>{freelancer.name}</td>
-        <td>{freelancer.email}</td>
+        <th scope="col">Name</th>
+        <th scope="col">E-Mail</th>
       </tr>
-    {/each}
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      {#each freelancers as freelancer}
+        <tr>
+          <td>{freelancer.name}</td>
+          <td>{freelancer.email}</td>
+        </tr>
+      {/each}
+    </tbody>
+  </table>
 
-<nav>
-  <ul class="pagination">
-    {#each Array(nrOfPages) as _, i}
-      <li class="page-item">
-        <a class="page-link" class:active={currentPage == i + 1} href={"#/freelancers?page=" + (i + 1)}>{i + 1}</a>
-      </li>
-    {/each}
-  </ul>
-</nav>
+  <nav>
+    <ul class="pagination">
+      {#each Array(nrOfPages) as _, i}
+        <li class="page-item">
+          <a class="page-link" class:active={currentPage == i + 1} href={"#/freelancers?page=" + (i + 1)}>{i + 1}</a>
+        </li>
+      {/each}
+    </ul>
+  </nav>
 {/if}

@@ -17,6 +17,7 @@ describe("Manage jobs as user", () => {
                 Authorization: "Bearer " + sessionStorage.getItem("jwt_token"),
             },
         });
+        
         cy.get('a[href="#/jobs"]').click();
         cy.location("hash").should("include", "jobs");
         const formData = [
@@ -38,7 +39,7 @@ describe("Manage jobs as user", () => {
     })
 
 
-    it("login as user", () => {
+    specify("login as user", () => {
         cy.visit("http://localhost:8080");
         cy.get("#username").type(Cypress.env()["user"].email);
         cy.get("#password").type(Cypress.env()["user"].password);
@@ -77,9 +78,17 @@ describe("Manage jobs as user", () => {
 
     it("check assignToMe", () => {
         cy.get('a[href="#/jobs?page=1"]').click();
-        cy.get('tbody>tr').should('contain', 'TestDescription1');
+        cy.get('tbody>tr').should('contain', 'TestDescription2');
         cy.get('tr:contains("TestDescription1") button:contains("Assign to me")').click();
         cy.get('tr:contains("TestDescription1")').should('contain', 'ASSIGNED');
+    });
+
+
+    it("check completeMyJob", () => {
+        cy.get('a[href="#/jobs?page=1"]').click();
+        cy.get('tbody>tr').should('contain', 'TestDescription2');
+        cy.get('tr:contains("TestDescription1") button:contains("Complete Job")').click();
+        cy.get('tr:contains("TestDescription1")').should('contain', 'DONE');
     });
 
 

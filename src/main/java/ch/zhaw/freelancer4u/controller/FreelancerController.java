@@ -21,7 +21,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.zhaw.freelancer4u.model.Freelancer;
 import ch.zhaw.freelancer4u.model.FreelancerCreateDTO;
+import ch.zhaw.freelancer4u.model.MailInformation;
 import ch.zhaw.freelancer4u.repository.FreelancerRepository;
+import ch.zhaw.freelancer4u.service.MailValidatorService;
 
 @RestController
 @RequestMapping("/api/freelancer")
@@ -29,16 +31,34 @@ public class FreelancerController {
     @Autowired
     FreelancerRepository freelancerRepository;
 
-    @PostMapping("/")
+    @Autowired
+    MailValidatorService mailValidatorService;
+    
+    @PostMapping("/create")
+    @Secured("ROLE_admin")
     public ResponseEntity<Freelancer> createFreelancer(
             @RequestBody FreelancerCreateDTO fDTO
     ) {
+        // Check, if Email is invalid
+        MailInformation mailInformation = mailValidatorService.validateEmail(fDTO.getEmail());
+        if (mailInformation.isDisposable() || !mailInformation.isDns() || !mailInformation.isFormat()){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        // Check, if Email is already in Database
+        Freelancer freelancer = freelancerRepository.findFirstByEmail(fDTO.getEmail());
+        if (freelancer != null) {
+            return new ResponseEntity<Freelancer>(HttpStatus.CONFLICT);
+        }
+
+        // Create Freelancer
         Freelancer fDAO = new Freelancer(fDTO.getEmail(), fDTO.getName());
         Freelancer f = freelancerRepository.save(fDAO);
         return new ResponseEntity<>(f, HttpStatus.CREATED);
     }
 
-    @GetMapping("/")
+
+    @GetMapping("/getall")
     @Secured("ROLE_admin")
     public ResponseEntity<Page<Freelancer>> getAllFreelancer(
             @RequestParam(required = false, defaultValue = "1") Integer pageNumber,
@@ -49,7 +69,7 @@ public class FreelancerController {
     }
 
 
-    @GetMapping("/getall")
+    @GetMapping("/getalltogether")
     @Secured("ROLE_admin")
     public ResponseEntity<List<Freelancer>> getListOfAllFreelancer() {
         List<Freelancer> allFree = freelancerRepository.findAll();
