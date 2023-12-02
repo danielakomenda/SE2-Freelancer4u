@@ -89,6 +89,7 @@
     };
     axios(config)
       .then(function (response) {
+        alert("Sent a confirmation mail to: " +freelancerEmail)
         getJobs();
       })
       .catch(function (error) {
@@ -105,6 +106,7 @@
     };
     axios(config)
       .then(function (response) {
+        alert("Sent a confirmation mail to: " +freelancerEmail)
         getJobs();
       })
       .catch(function (error) {
@@ -126,7 +128,7 @@
     };
     axios(config)
       .then(function (response) {
-        alert("Assigned job to:" +freelancerEmail)
+        alert("Sent a confirmation mail to: " +freelancerEmail)
         getJobs();
       })
       .catch(function (error) {
