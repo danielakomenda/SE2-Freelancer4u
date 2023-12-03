@@ -117,14 +117,8 @@ node_modules/
 *.sln
 *.sw*
 
-# Environment configurations
+# Credentials
 .env
-
-*.config.*
-*.jsconfig.json
-*.ts
-
-
 src/main/java/ch/zhaw/freelancer4u/model/Credentials.java
 **/cypress.env.json
 

@@ -1,6 +1,10 @@
 
 TO DO:
 
+- $cd freelancer4u-frontend npm install
+
+
+
 - im Ordner "src/main/java/ch/zhaw/freelancer4u/model" die Java-Klasse "Credentials.java" erstellen mit dem folgenden Inhalt:
 
 import lombok.Getter;
