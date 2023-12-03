@@ -47,7 +47,7 @@ public class ServiceController {
         String details = job.get().getDetailDescription();
         
         String assignSubject = "Assigned job with status " +state;
-        String assignMessage = "Hi, the job " +description +" was marked as " +state +"\nThis job contains the following task: " +details;
+        String assignMessage = "Hi, the job " +description +" was marked as " +state +". This job contains the following task: " +details;
 
         if (job.isPresent()) {
             mail.setSubject(assignSubject);
@@ -74,7 +74,7 @@ public class ServiceController {
         String details = job.get().getDetailDescription();
 
         String completeSubject = "Completed job with status " +state;
-        String completeMessage = "Hi, the job " + description + " was marked as " + state +"\n all following tasks are finished: " +details;
+        String completeMessage = "Hi, the job " + description + " was marked as " + state +". All following tasks are finished: " +details;
 
         if (job.isPresent()) {
             mail.setSubject(completeSubject);
@@ -102,7 +102,7 @@ public class ServiceController {
         String details = job.get().getDetailDescription();
 
         String assignSubject = "Assigned job with status " +state;
-        String assignMessage = "Hi, the job " +description +" was marked as " +state +"\nThis job contains the following task: " +details;
+        String assignMessage = "Hi, the job " +description +" was marked as " +state +". This job contains the following task: " +details;
 
         if (job.isPresent()) {
             mail.setSubject(assignSubject);
@@ -129,7 +129,7 @@ public class ServiceController {
         String details = job.get().getDetailDescription();
 
         String completeSubject = "Completed job with status " +state;
-        String completeMessage = "Hi, the job " + description + " was marked as " + state +"\n all following tasks are finished: " +details;
+        String completeMessage = "Hi, the job " + description + " was marked as " + state +". All following tasks are finished: " +details;
 
         if (job.isPresent()) {
             mail.setSubject(completeSubject);
