@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ch.zhaw.freelancer4u.model.Freelancer;
 import ch.zhaw.freelancer4u.model.Job;
+import ch.zhaw.freelancer4u.model.JobState;
 import ch.zhaw.freelancer4u.model.JobStateChangeDTO;
 import ch.zhaw.freelancer4u.model.Mail;
 import ch.zhaw.freelancer4u.repository.FreelancerRepository;
@@ -41,9 +42,16 @@ public class ServiceController {
         String jobId = changeS.getJobId();
 
         Optional<Job> job = jobService.assignJob(jobId, freelancerEmail);
+        JobState state = job.get().getJobState();
+        String description = job.get().getDescription();
+        String details = job.get().getDetailDescription();
+        
+        String assignSubject = "Assigned job with status " +state;
+        String assignMessage = "Hi, the job " +description +" was marked as " +state +"\nThis job contains the following task: " +details;
+
         if (job.isPresent()) {
-            mail.setSubject("Assigned job " + job.get().getDescription() + " with status " + job.get().getJobState());
-            mail.setMessage("Hi, the job " + job.get().getDescription() + " was marked as " + job.get().getJobState());
+            mail.setSubject(assignSubject);
+            mail.setMessage(assignMessage);
             mail.setTo(freelancerEmail);
 
             if (mailService.sendMail(mail)) {
@@ -60,9 +68,17 @@ public class ServiceController {
         String freelancerEmail = changeS.getFreelancerEmail();
         String jobId = changeS.getJobId();
         Optional<Job> job = jobService.completeJob(jobId, freelancerEmail);
+
+        JobState state = job.get().getJobState();
+        String description = job.get().getDescription();
+        String details = job.get().getDetailDescription();
+
+        String completeSubject = "Completed job with status " +state;
+        String completeMessage = "Hi, the job " + description + " was marked as " + state +"\n all following tasks are finished: " +details;
+
         if (job.isPresent()) {
-            mail.setSubject("Complete job " + job.get().getDescription() + " with status " + job.get().getJobState());
-            mail.setMessage("Hi, the job " + job.get().getDescription() + " was marked as " + job.get().getJobState());
+            mail.setSubject(completeSubject);
+            mail.setMessage(completeMessage);
             mail.setTo(freelancerEmail);
 
             if (mailService.sendMail(mail)) {
@@ -73,21 +89,30 @@ public class ServiceController {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
+
     @PutMapping("/me/assignjob")
     public ResponseEntity<Job> assignToMe(
             @RequestParam String jobId,
             @AuthenticationPrincipal Jwt jwt) {
         String userEmail = jwt.getClaimAsString("email");
+       
         Optional<Job> job = jobService.assignJob(jobId, userEmail);
+        JobState state = job.get().getJobState();
+        String description = job.get().getDescription();
+        String details = job.get().getDetailDescription();
+
+        String assignSubject = "Assigned job with status " +state;
+        String assignMessage = "Hi, the job " +description +" was marked as " +state +"\nThis job contains the following task: " +details;
+
         if (job.isPresent()) {
-            mail.setSubject("Assigned job " + job.get().getDescription() + " with status " + job.get().getJobState());
-            mail.setMessage("Hi, the job " + job.get().getDescription() + " was marked as " + job.get().getJobState());
+            mail.setSubject(assignSubject);
+            mail.setMessage(assignMessage);
             mail.setTo(userEmail);
 
             if (mailService.sendMail(mail)) {
                 return new ResponseEntity<>(job.get(), HttpStatus.OK);
             }
-            return new ResponseEntity<>(job.get(), HttpStatus.OK);
+            return new ResponseEntity<>(job.get(), HttpStatus.I_AM_A_TEAPOT);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
@@ -97,16 +122,24 @@ public class ServiceController {
             @RequestParam String jobId,
             @AuthenticationPrincipal Jwt jwt) {
         String userEmail = jwt.getClaimAsString("email");
+
         Optional<Job> job = jobService.completeJob(jobId, userEmail);
+        JobState state = job.get().getJobState();
+        String description = job.get().getDescription();
+        String details = job.get().getDetailDescription();
+
+        String completeSubject = "Completed job with status " +state;
+        String completeMessage = "Hi, the job " + description + " was marked as " + state +"\n all following tasks are finished: " +details;
+
         if (job.isPresent()) {
-            mail.setSubject("Completed job " + job.get().getDescription() + " with status " + job.get().getJobState());
-            mail.setMessage("Hi, the job " + job.get().getDescription() + " was marked as " + job.get().getJobState());
+            mail.setSubject(completeSubject);
+            mail.setMessage(completeMessage);
             mail.setTo(userEmail);
 
             if (mailService.sendMail(mail)) {
                 return new ResponseEntity<>(job.get(), HttpStatus.OK);
             }
-            return new ResponseEntity<>(job.get(), HttpStatus.OK);
+            return new ResponseEntity<>(job.get(), HttpStatus.I_AM_A_TEAPOT);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }

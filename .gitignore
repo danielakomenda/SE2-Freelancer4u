@@ -125,4 +125,6 @@ node_modules/
 *.jsconfig.json
 *.ts
 
-src/main/java/ch/zhaw/freelancer4u/model/MailCredentials.java
+src/main/java/ch/zhaw/freelancer4u/model/Credentials.java
+
+src/main/resources/static/assets/*

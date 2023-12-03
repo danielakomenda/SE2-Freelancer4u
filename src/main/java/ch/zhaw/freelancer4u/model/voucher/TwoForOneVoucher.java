@@ -2,7 +2,6 @@ package ch.zhaw.freelancer4u.model.voucher;
 
 import java.util.List;
 
-import ch.zhaw.freelancer4u.model.Job;
 import ch.zhaw.freelancer4u.model.JobType;
 
 public class TwoForOneVoucher implements Voucher {
@@ -13,7 +12,7 @@ public class TwoForOneVoucher implements Voucher {
     }
 
     @Override
-    public double getDiscount(List<Job> jobs) {
+    public double getDiscount(List<JobVoucher> jobs) {
 
         double totalEarnings = 0;
         long countOfType = jobs.stream()
@@ -23,7 +22,7 @@ public class TwoForOneVoucher implements Voucher {
         if (countOfType > 1) {
             totalEarnings = jobs.stream()
                     .filter(job -> job.getJobType().equals(jobType))
-                    .mapToDouble(Job::getEarnings)
+                    .mapToDouble(JobVoucher::getEarnings)
                     .sum();
         }
 

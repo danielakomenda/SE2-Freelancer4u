@@ -2,6 +2,7 @@ package ch.zhaw.freelancer4u.controller;
 
 import java.util.List;
 
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,10 +17,14 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import ch.zhaw.freelancer4u.model.Job;
 import ch.zhaw.freelancer4u.model.JobCreateDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ch.zhaw.freelancer4u.model.Job;
 import ch.zhaw.freelancer4u.model.JobStateAggregation;
 import ch.zhaw.freelancer4u.model.JobType;
+import ch.zhaw.freelancer4u.model.chatGPT.ChatGPTService;
+import ch.zhaw.freelancer4u.model.chatGPT.MessageResponse;
 import ch.zhaw.freelancer4u.repository.JobRepository;
 
 @RestController
@@ -28,11 +33,27 @@ public class JobController {
     @Autowired
     JobRepository jobRepository;
 
+    private static final Logger logger = LoggerFactory.getLogger(JobController.class);
+
     @PostMapping("/job")
     @Secured("ROLE_admin")
     public ResponseEntity<Job> createJob(
             @RequestBody JobCreateDTO jDTO) {
-        Job jDAO = new Job(jDTO.getDescription(), jDTO.getEarnings(), jDTO.getJobType());
+                ChatGPTService chatGPTService = new ChatGPTService();
+
+                String prompt = "Erstelle mir eine Kurzbeschreibung für die folgende Aufgabe: " + jDTO.getDescription();
+                String content = "keine Details vorhanden";
+
+                MessageResponse messageResponse = new MessageResponse();
+                
+                try {
+                    messageResponse = chatGPTService.chatWithChatGPT(prompt);
+                    content = messageResponse.getContent();
+                } catch(Exception e) {
+                    logger.info("ChatGPT was not reachable");
+                }
+
+        Job jDAO = new Job(jDTO.getDescription(), content, jDTO.getEarnings(), jDTO.getJobType());
         Job job = jobRepository.save(jDAO);
         return new ResponseEntity<>(job, HttpStatus.CREATED);
     }

@@ -3,22 +3,18 @@ package ch.zhaw.freelancer4u.service;
 import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.core.env.Environment;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
 
 import ch.zhaw.freelancer4u.model.Mail;
-import ch.zhaw.freelancer4u.model.MailCredentials;
+import ch.zhaw.freelancer4u.model.Credentials;
 
 @Service
 public class MailService {
 
-    MailCredentials mailCredentials = new MailCredentials();
+    Credentials mailCredentials = new Credentials();
 
     private String username = mailCredentials.getUsername();
     private String password = mailCredentials.getPassword();

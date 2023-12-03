@@ -18,6 +18,8 @@ public class JobService {
     @Autowired
     FreelancerRepository freelancerRepository;
 
+
+    // Method for logged in User to assign to a new job
     public Optional<Job> assignJob(String jobId, String freelancerEmail) {
         Optional<Job> jobToAssign = jobRepository.findById(jobId);
         Freelancer freelancer = freelancerRepository.findFirstByEmail(freelancerEmail);
@@ -38,11 +40,13 @@ public class JobService {
     }
 
 
+    // Method for logged in User to complete his job
     public Optional<Job> completeJob(String jobId, String freelancerEmail){
         Optional<Job> jobToComplete = jobRepository.findById(jobId);
 
         if (jobToComplete.isPresent() && jobToComplete.get().getJobState() == JobState.ASSIGNED) {            
             Optional<Freelancer> freelancer = freelancerRepository.findById(jobToComplete.get().getFreelancerId());
+            
             Job job = jobToComplete.get();
             if (freelancer.isPresent() && freelancer.get().getEmail().equals(freelancerEmail)){
                 job.setJobState(JobState.DONE);

@@ -1,6 +1,6 @@
 <script>
   import axios from "axios";
-  import { jwt_token, user, userId } from "../store";
+  import { jwt_token, user, userId, userEmail} from "../store";
   import { querystring } from "svelte-spa-router";
 
   const api_root = window.location.origin;
@@ -17,9 +17,12 @@
   let jobs = [];
   let job = {
     description: null,
+    detailDescription: null,
     earnings: null,
     jobType: null,
   };
+
+  let loading = false;
 
   $: {
     if ($jwt_token !== "") {
@@ -61,6 +64,7 @@
 
   
   function createJob() {
+      loading = true;
     var config = {
       method: "post",
       url: api_root + "/api/job",
@@ -73,6 +77,7 @@
     axios(config)
       .then(function (response) {
         alert("Job created");
+        loading = false;
         getJobs();
       })
       .catch(function (error) {
@@ -89,7 +94,7 @@
     };
     axios(config)
       .then(function (response) {
-        alert("Sent a confirmation mail to: " +freelancerEmail)
+        alert("Sent a confirmation mail to: " + $userEmail)
         getJobs();
       })
       .catch(function (error) {
@@ -106,7 +111,7 @@
     };
     axios(config)
       .then(function (response) {
-        alert("Sent a confirmation mail to: " +freelancerEmail)
+        alert("Sent a confirmation mail to: " + $userEmail) 
         getJobs();
       })
       .catch(function (error) {
@@ -128,7 +133,7 @@
     };
     axios(config)
       .then(function (response) {
-        alert("Sent a confirmation mail to: " +freelancerEmail)
+        alert("Sent a confirmation mail to: " + freelancerEmail)
         getJobs();
       })
       .catch(function (error) {
@@ -180,8 +185,20 @@
         <input bind:value={job.earnings} class="form-control" id="earnings" type="number" />
       </div>
     </div>
-    <button type="button" class="btn btn-primary" on:click={createJob}>Submit</button>
+
+    {#if loading}
+	<button class="btn btn-primary" type="button" disabled>
+		<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+		<span class="sr-only">Loading...</span>
+	</button>
+{:else}
+	<button class="btn btn-primary" type="button" on:click={createJob} on:click={() => loading = !loading}>
+  	<span class="sr-only">Submit</span>
+	</button>
+{/if}
+
   </form>
+
 {/if}
 
 <!-- LISTE VON JOBS: SICHTBAR FÜR ALLE USER -->
@@ -222,6 +239,7 @@
   <thead>
     <tr>
       <th scope="col">Description</th>
+      <th scope="col" id="details-header">Details</th>
       <th scope="col">Type</th>
       <th scope="col">Earnings</th>
       <th scope="col">State</th>
@@ -237,6 +255,7 @@
     {#each jobs as job}
       <tr>
         <td>{job.description}</td>
+        <td id="details-content">{job.detailDescription}</td>
         <td>{job.jobType}</td>
         <td>{job.earnings}</td>
         <td>{job.jobState}</td>
@@ -309,3 +328,16 @@
     {/each}
   </ul>
 </nav>
+
+
+
+<style>
+    /* Add this style to set a specific width for the "Details" column */
+    #details-header {
+      width: 35%; /* Adjust the width as needed */
+    }
+
+    #details-content {
+      width: 35%; /* Adjust the width as needed */
+    }
+</style>

@@ -24,6 +24,7 @@ export const isAuthenticated = derived(
 // jwt_token and myFreelancerId
 export const jwt_token = writable("");
 export const userId = writable(null);
+export const userEmail = writable("");
 
 let sessionToken = sessionStorage.getItem("jwt_token");
 if (sessionToken) {

@@ -2,8 +2,6 @@ package ch.zhaw.freelancer4u.model.voucher;
 
 import java.util.List;
 
-import ch.zhaw.freelancer4u.model.Job;
-
 public class PercentageVoucher implements Voucher {
     private int discount;
 
@@ -21,9 +19,9 @@ public class PercentageVoucher implements Voucher {
 
 
     @Override
-    public double getDiscount(List<Job> jobs) {
+    public double getDiscount(List<JobVoucher> jobs) {
         double totalEarnings = jobs.stream()
-                .mapToDouble(Job::getEarnings)
+                .mapToDouble(JobVoucher::getEarnings)
                 .sum();
 
         if (totalEarnings > 0) {
