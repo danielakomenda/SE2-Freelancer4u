@@ -2,7 +2,7 @@
 
 
 describe("Manage jobs as admin", () => {
-    beforeEach(() => {
+    before(() => {
         cy.clearAllSessionStorage().then(() => {
             cy.visit("http://localhost:8080");
 
