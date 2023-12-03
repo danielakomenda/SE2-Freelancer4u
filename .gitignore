@@ -92,14 +92,13 @@ dist-ssr
 
 .github/ISSUE_TEMPLATE/
 
-freelancer4u-frontend/index.html
 freelancer4u-frontend/README.md
 src/main/resources/static/assets/*.js
 src/main/resources/static/index.html
 src/main/static/assets/svelte**.svg
 **/vite.svg
 
-**/cypress.env.json
+
 freelancer4u-frontend/cypress/downloads
 freelancer4u-frontend/cypress/fixtures
 freelancer4u-frontend/cypress/support
@@ -125,6 +124,8 @@ node_modules/
 *.jsconfig.json
 *.ts
 
+
 src/main/java/ch/zhaw/freelancer4u/model/Credentials.java
+**/cypress.env.json
 
 src/main/resources/static/assets/*
